@@ -4,6 +4,7 @@ defmodule BnzFx do
   """
   require Logger
   @feed "https://www.bnz.co.nz/XMLFeed/portal/fx/xml"
+  @cache :bnz_fx
 
   @doc """
   Hello world.
@@ -26,10 +27,33 @@ defmodule BnzFx do
     Enum.map(rates, fn {_, _, x} -> format(x) end)
   end
 
+  def get(curr) do
+    case get_cache(curr) do
+      nil -> 
+        rates()
+        get_cache(curr)
+      {:error, :not_found} ->
+        rates()
+        get_cache(curr)
+      rate -> rate
+    end
+  end
+
   defp format(rate) do
     rate
     |> Enum.reduce(%{}, fn {x, _, y}, acc -> Map.put(acc, x, List.first(y)) end)
     |> BnzFx.Currency.new()
+    |> set_cache()
+  end
+
+  defp get_cache(curr) do
+    case ConCache.get(@cache, curr) do
+      nil -> {:error, :not_found}
+      rate -> rate
+    end
+  end
+  defp set_cache(curr) do
+    ConCache.put(@cache, curr.currency, curr)  
   end
 
   defp get_xml() do

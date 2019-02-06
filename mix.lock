@@ -1,3 +1,4 @@
 %{
+  "con_cache": {:git, "https://github.com/sasa1977/con_cache.git", "47d1a3b358971d57c25fd73d208fb41aefa02945", []},
   "exoml": {:hex, :exoml, "0.0.3", "d47bda344ead3454b3d87f187f86c708ee1b1be5c664afcb05cbdb41cdfea5da", [:mix], [], "hexpm"},
 }

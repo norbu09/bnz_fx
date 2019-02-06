@@ -1,5 +1,4 @@
 defmodule BnzFx.Currency do
-  require Logger
 
   @record [
     :chequebuy,
@@ -15,7 +14,6 @@ defmodule BnzFx.Currency do
   defstruct @record
 
   def new(map) do
-    Logger.debug("map: #{inspect(map)}")
     rec = Enum.reduce(@record, %{}, fn x, y -> Map.put(y, x, map[Atom.to_string(x)]) end)
     struct(%__MODULE__{}, rec)
   end
