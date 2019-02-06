@@ -1,0 +1,3 @@
+%{
+  "exoml": {:hex, :exoml, "0.0.3", "d47bda344ead3454b3d87f187f86c708ee1b1be5c664afcb05cbdb41cdfea5da", [:mix], [], "hexpm"},
+}
