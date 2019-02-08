@@ -1,5 +1,4 @@
 defmodule BnzFx.Currency do
-
   @record [
     :chequebuy,
     :country,

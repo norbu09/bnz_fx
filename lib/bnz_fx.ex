@@ -3,7 +3,7 @@ defmodule BnzFx do
   This module parses the BNZ currency feed and exposes it as a easy to use data
   structure. It does cache internally by default for an hour but can be
   overwritten by setting the `ttl` config variable.
-  
+
   """
   require Logger
   @feed "https://www.bnz.co.nz/XMLFeed/portal/fx/xml"
@@ -30,14 +30,18 @@ defmodule BnzFx do
   """
   def get(curr) do
     symbol = String.upcase(curr)
+
     case get_cache(symbol) do
-      nil -> 
+      nil ->
         rates()
         get_cache(symbol)
+
       {:error, :not_found} ->
         rates()
         get_cache(symbol)
-      rate -> rate
+
+      rate ->
+        rate
     end
   end
 
@@ -57,7 +61,8 @@ defmodule BnzFx do
       {:ok, fx} ->
         {rate, _} = Float.parse(fx.ttbuy || fx.chequebuy || fx.notebuy)
         {:ok, rate}
-      error -> 
+
+      error ->
         error
     end
   end
@@ -78,7 +83,8 @@ defmodule BnzFx do
       {:ok, fx} ->
         {rate, _} = Float.parse(fx.ttsell || fx.notesell)
         {:ok, rate}
-      error -> 
+
+      error ->
         error
     end
   end
@@ -109,12 +115,20 @@ defmodule BnzFx do
     BnzFx.Fx.new(amount, curr, :sell)
   end
 
-
   # internal plumbing
   defp rates do
-      get_xml()
-      |> Exoml.decode()
-      |> parse_xml
+    # cache a dummy NZD rate for ease of use
+    BnzFx.Currency.new(%{
+      "country" => "New Zealand",
+      "currency" => "NZD",
+      "ttbuy" => "1.0",
+      "ttsell" => "1.0",
+    })
+    |> set_cache
+
+    get_xml()
+    |> Exoml.decode()
+    |> parse_xml
   end
 
   defp format(rate) do
@@ -130,6 +144,7 @@ defmodule BnzFx do
       rate -> {:ok, rate}
     end
   end
+
   defp set_cache(curr) do
     ConCache.put(@cache, curr.currency, %ConCache.Item{value: curr, ttl: @ttl})
   end
@@ -141,6 +156,7 @@ defmodule BnzFx do
     {_updated, rates} = Enum.split(r3, 1)
     Enum.map(rates, fn {_, _, x} -> format(x) end)
   end
+
   defp get_xml() do
     case :httpc.request(String.to_charlist(@feed)) do
       {:ok, {status, _header, body}} ->

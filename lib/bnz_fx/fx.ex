@@ -1,5 +1,4 @@
 defmodule BnzFx.Fx do
-
   @record [
     :amount,
     :rate,
@@ -16,8 +15,11 @@ defmodule BnzFx.Fx do
           rate: rate,
           currency: "NZD"
         }
+
         {:ok, struct(%__MODULE__{}, rec)}
-      error -> error
+
+      error ->
+        error
     end
   end
 
@@ -29,8 +31,11 @@ defmodule BnzFx.Fx do
           rate: rate,
           currency: String.upcase(currency)
         }
+
         {:ok, struct(%__MODULE__{}, rec)}
-      error -> error
+
+      error ->
+        error
     end
   end
 
